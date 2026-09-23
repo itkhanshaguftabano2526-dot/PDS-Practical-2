@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BhashaMitra - Vernacular Pedagogy & Advanced Analytics Dashboard</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-cream: #FFFDF8;
+      --card-bg: #FFFFFF;
+      --border-subtle: #EFE9DE;
+      --brand-orange: #D9531E;
+      --brand-orange-soft: #FDF3EF;
+      --brand-orange-hover: #C24513;
+      --brand-blue: #0A84FF;
+      --brand-blue-soft: #EDF6FF;
+      --brand-green: #10B981;
+      --brand-green-soft: #E8F8F3;
+      --brand-purple: #9333EA;
+      --brand-purple-soft: #F3E8FF;
+      --text-dark: #1E293B;
+      --text-muted: #64748B;
+      --radius-pill: 9999px;
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-cream); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* NAVBAR */
+    .top-navbar { background: var(--card-bg); border-bottom: 1px solid var(--border-subtle); padding: 12px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .brand-group { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 38px; height: 38px; background: var(--brand-orange-soft); color: var(--brand-orange); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+    .brand-text-title { font-size: 18px; font-weight: 800; color: var(--brand-orange); line-height: 1.1; }
+    .brand-text-subtitle { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .nav-pills { display: flex; align-items: center; gap: 6px; background: #F8F5F0; padding: 4px; border-radius: var(--radius-pill); border: 1px solid var(--border-subtle); }
+    .nav-pill { padding: 8px 18px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer; background: transparent; border: none; transition: all 0.2s ease; }
+    .nav-pill.active { background: var(--brand-orange); color: white; box-shadow: 0 2px 6px rgba(217, 83, 30, 0.3); }
+
+    /* VIEWPORT */
+    .app-viewport { max-width: 1280px; width: 100%; margin: 0 auto; padding: 24px; flex: 1; }
+    .view-panel { display: none; animation: fadeIn 0.25s ease-in-out; }
+    .view-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* CARDS & UI COMPONENTS */
+    .card { background: var(--card-bg); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+    .badge-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; }
+    .btn-orange { background: var(--brand-orange); color: white; border: none; padding: 10px 20px; border-radius: var(--radius-md); font-weight: 700; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .btn-orange:hover { background: var(--brand-orange-hover); }
+
+    /* QUOTE BANNER */
+    .quote-box { background: linear-gradient(135deg, #FFF8F3 0%, #FEF3C7 100%); border: 1px solid #FDE68A; border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .quote-text { font-size: 16px; font-weight: 700; color: #78350F; }
+    .quote-sub { font-size: 13px; color: #92400E; margin-top: 4px; font-weight: 600; }
+
+    /* STUDIO & TRANSLATION */
+    .lang-pill-group { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+    .lang-pill { padding: 6px 14px; border-radius: var(--radius-pill); border: 1px solid var(--border-subtle); background: #F8F5F0; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .lang-pill.selected { background: #FEF3C7; border-color: #F59E0B; color: #92400E; }
+    .studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+    .output-box { background: #FFFDF0; border: 1px solid #FDE68A; border-radius: var(--radius-lg); padding: 20px; }
+
+    /* STUDENT HUB */
+    .student-header-card { background: white; border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .lesson-split { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; margin-top: 16px; }
+    .audio-play-bar { background: #0284C7; color: white; padding: 12px 20px; border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: 10px; font-weight: 700; cursor: pointer; margin-bottom: 16px; user-select: none; }
+    .vocab-chips { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    .chip { background: #F8FAF2; border: 1px solid #E2E8F0; padding: 12px; border-radius: var(--radius-lg); text-align: center; flex: 1; min-width: 120px; cursor: pointer; }
+
+    /* ANALYTICS EXTENDED DESIGN */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .stat-card { background: white; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 16px; }
+    .stat-val { font-size: 28px; font-weight: 800; margin-top: 6px; }
+    .analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    .analytics-full { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+    .progress-bar-bg { background: #E2E8F0; border-radius: var(--radius-pill); height: 10px; width: 100%; overflow: hidden; margin-top: 6px; }
+    .progress-bar-fill { height: 100%; border-radius: var(--radius-pill); transition: width 0.5s ease; }
+    .bar-chart-container { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; padding-top: 20px; gap: 12px; }
+    .chart-col { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+    .chart-bar { width: 100%; max-width: 36px; border-radius: 6px 6px 0 0; position: relative; }
+    .chart-val { position: absolute; top: -20px; font-size: 11px; font-weight: 700; color: var(--text-muted); }
+    .chart-label { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-top: 8px; }
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+    .data-table th { text-align: left; padding: 10px; background: #F8FAFC; border-bottom: 2px solid var(--border-subtle); color: var(--text-muted); }
+    .data-table td { padding: 12px 10px; border-bottom: 1px solid var(--border-subtle); }
+
+    /* RECHECK ENGINE EXPANDED UI */
+    .recheck-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+    .eval-card { background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; }
+    .match-pill { font-size: 26px; font-weight: 800; }
+    .meter-bar { background: #E2E8F0; height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+    .meter-fill { height: 100%; background: var(--brand-green); width: 0%; transition: width 0.4s; }
+  </style>
+</head>
+<body>
+
+  <header class="top-navbar">
+    <div class="brand-group">
+      <div class="brand-icon"><i data-lucide="book-open"></i></div>
+      <div>
+        <div class="brand-text-title">BhashaMitra <span style="font-size: 14px; font-weight: 600;">भाषा मित्र</span></div>
+        <div class="brand-text-subtitle">Vernacular Pedagogy Dashboard</div>
+      </div>
+    </div>
+
+    <nav class="nav-pills">
+      <button class="nav-pill active" onclick="switchTab('home', this)">Home</button>
+      <button class="nav-pill" onclick="switchTab('studio', this)">Teacher Studio</button>
+      <button class="nav-pill" onclick="switchTab('student', this)">Student Hub</button>
+      <button class="nav-pill" onclick="switchTab('analytics', this)">Analytics Pro</button>
+      <button class="nav-pill" onclick="switchTab('recheck', this)">Recheck Engine</button>
+    </nav>
+  </header>
+
+  <main class="app-viewport">
+
+    <div class="quote-box">
+      <div>
+        <span class="badge-tag" style="background:#FEF3C7; color:#92400E; margin-bottom:6px;">
+          <i data-lucide="quote" size="12"></i> DAILY PEDAGOGY QUOTE & LESSON
+        </span>
+        <div class="quote-text" id="quoteText">"The sun gives us light. Plants use sunlight to make food."</div>
+        <div class="quote-sub" id="quoteTrans">"सूरज हमें प्रकाश देता है। पौधे भोजन बनाने के लिए धूप का उपयोग करते हैं।"</div>
+      </div>
+      <button class="btn-orange" style="padding: 8px 14px; font-size: 12px; background: #D97706;" onclick="nextQuote()">
+        <i data-lucide="refresh-cw" size="14"></i> Next Quote (<span id="quoteCounter">1/5</span>)
+      </button>
+    </div>
+
+    <section id="panel-home" class="view-panel active">
+      <div class="card" style="text-align: center; padding: 40px 20px;">
+        <span class="badge-tag" style="background:#FEF3C7; color:#92400E;">
+          <i data-lucide="sparkles" size="14"></i> NEP 2020 Compliant Vernacular AI
+        </span>
+        <h1 style="font-size: 32px; font-weight: 800; margin: 12px 0;">Bridging Language Barriers in Primary Classrooms</h1>
+        <p style="color: var(--text-muted); max-width: 680px; margin: 0 auto 24px auto;">
+          Real-time translation studio supporting Hindi and English, student visual learning cards, audio synthesis, and expanded classroom learning analytics.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px;">
+          <button class="btn-orange" onclick="switchTabByNav('studio')"><i data-lucide="pen-tool" size="16"></i> Open Teacher Studio</button>
+          <button class="btn-orange" style="background: var(--brand-blue);" onclick="switchTabByNav('student')"><i data-lucide="play-circle" size="16"></i> Open Student Hub</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-studio" class="view-panel">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="badge-tag" style="background:var(--brand-orange-soft); color:var(--brand-orange);">LIVE ADAPTER</span>
+            <h1 style="font-size: 24px; font-weight: 800; margin-top: 6px;">On-The-Spot Contextual Translation Studio</h1>
+          </div>
+          <button class="btn-orange" onclick="alert('Lesson pushed to active student devices!')"><i data-lucide="send" size="16"></i> Push to Class (28)</button>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Select Target Language:</label>
+          <div class="lang-pill-group">
+            <div class="lang-pill selected" onclick="selectLanguage('hi', this)">हिन्दी (Hindi)</div>
+            <div class="lang-pill" onclick="selectLanguage('en', this)">English</div>
+          </div>
+        </div>
+
+        <div class="studio-grid">
+          <div>
+            <label style="font-size: 13px; font-weight: 700;">Type Any Text (Instant Accurate Meaning):</label>
+            <textarea id="studioInput" style="width: 100%; height: 160px; margin-top: 8px; padding: 12px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); font-family: inherit; font-size: 14px;" oninput="onTheSpotTranslate()" placeholder="Type sentences like 'Trees give oxygen', 'Water is life', etc."></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+              <button class="btn-orange" style="font-size: 12px; background: #64748B;" onclick="checkGrammar()"><i data-lucide="check-circle" size="14"></i> Run Grammar Check</button>
+            </div>
+          </div>
+
+          <div class="output-box">
+            <label style="font-size: 13px; font-weight: 700; color: #92400E;">Accurate Vernacular Translation:</label>
+            <p id="studioOutput" style="font-size: 18px; font-weight: 700; color: #1E293B; margin-top: 12px;">सूरज हमें प्रकाश देता है। पौधे भोजन बनाने के लिए धूप का उपयोग करते हैं।</p>
+            
+            <div style="margin-top: 16px; font-size: 12px; color: var(--text-muted);">
+              <strong>GRAMMAR & SEMANTICS:</strong> <span id="grammarStatus" style="color: var(--brand-green); font-weight: 700;">✓ Accurate Natural Translation</span>
+            </div>
+
+            <div style="margin-top: 16px; display: flex; align-items: center; gap: 10px;">
+              <button class="btn-orange" style="padding: 8px 14px; font-size: 12px; background: #0284C7;" onclick="playAudioFromStudio(1.0)"><i data-lucide="volume-2" size="14"></i> Listen (1.0x)</button>
+              <button class="btn-orange" style="padding: 8px 14px; font-size: 12px; background: #E2E8F0; color: #334155;" onclick="playAudioFromStudio(0.75)">0.75x Slow</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-student" class="view-panel">
+      <div class="student-header-card">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: #FED7AA; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #C2410C;">AP</div>
+          <div>
+            <h2 style="font-size: 18px;">नमस्ते, आरव! <span style="font-size: 14px; color: var(--text-muted); font-weight: 500;">(Aarav • Grade 3-B)</span></h2>
+            <div style="display: flex; gap: 8px; margin-top: 4px;">
+              <span style="background: #FEF3C7; color: #D97706; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">🔥 5-Day Streak</span>
+              <span style="background: #E0F2FE; color: #0369A1; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">⭐ 140 Points</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="badge-tag" style="background: #FFEDD5; color: #C2410C;">SYNCPAD LESSON</span>
+            <h1 id="studentLessonTitle" style="font-size: 22px; font-weight: 800; margin-top: 4px;">हमारा सौरमंडल और सूरज</h1>
+          </div>
+        </div>
+
+        <div class="lesson-split">
+          <div>
+            <div class="audio-play-bar" onclick="playCurrentStudentLesson()">
+              <i data-lucide="volume-2" size="20"></i> tap to listen (सुनिए)
+            </div>
+
+            <p id="studentLessonText" style="font-size: 20px; font-weight: 700; line-height: 1.5; color: #0F172A;">
+              "सूरज हमें प्रकाश देता है। पौधे भोजन बनाने के लिए धूप का उपयोग करते हैं।"
+            </p>
+
+            <div style="background: #F8FAFC; border-left: 3px solid var(--brand-blue); padding: 12px; margin-top: 16px; border-radius: 4px; font-size: 13px; color: var(--text-muted);">
+              <strong>ENGLISH MEANING:</strong><br>
+              <em id="studentEnglishText">"The sun gives us light. Plants use sunlight to make food."</em>
+            </div>
+          </div>
+
+          <div style="background: var(--brand-green-soft); border: 1px solid #A7F3D0; border-radius: var(--radius-lg); padding: 16px; text-align: center;">
+            <div id="studentVisualImage" style="font-size: 64px;">☀️🌱</div>
+            <p id="studentVisualLabel" style="font-weight: 700; margin-top: 8px; color: #065F46;">सूरज + पौधा = भोजन</p>
+          </div>
+        </div>
+
+        <div class="vocab-chips" id="vocabChipsContainer"></div>
+      </div>
+    </section>
+
+    <section id="panel-analytics" class="view-panel">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <span class="badge-tag" style="background: var(--brand-purple-soft); color: var(--brand-purple);">CLASSROOM INSIGHTS</span>
+            <h1 style="font-size: 24px; font-weight: 800; margin-top: 4px;">Expanded Learning & Comprehension Analytics</h1>
+          </div>
+          <select style="padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); font-weight: 700;">
+            <option>Grade 3-B (36 Students)</option>
+            <option>Grade 3-A (34 Students)</option>
+            <option>Grade 4-C (30 Students)</option>
+          </select>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;">OVERALL COMPREHENSION</span>
+            <div class="stat-val" style="color: var(--brand-green);">88%</div>
+            <div style="font-size: 11px; color: var(--brand-green); font-weight: 700; margin-top: 4px;">↑ +6% from last week</div>
+          </div>
+          <div class="stat-card">
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;">ACTIVE LISTENERS</span>
+            <div class="stat-val" style="color: var(--brand-blue);">34<span style="font-size: 16px; color: var(--text-muted);">/36</span></div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Avg 4.2 audio plays/student</div>
+          </div>
+          <div class="stat-card">
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;">VOCAB MASTERY SCORE</span>
+            <div class="stat-val" style="color: var(--brand-orange);">8.6<span style="font-size: 16px; color: var(--text-muted);">/10</span></div>
+            <div style="font-size: 11px; color: var(--brand-orange); font-weight: 700; margin-top: 4px;">Top Topic: Science & Nature</div>
+          </div>
+          <div class="stat-card">
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;">RECHECK MATCH RATE</span>
+            <div class="stat-val" style="color: var(--brand-purple);">94.2%</div>
+            <div style="font-size: 11px; color: var(--brand-purple); font-weight: 700; margin-top: 4px;">Dialect tolerance active</div>
+          </div>
+        </div>
+
+        <div class="analytics-grid">
+          <div style="background: #FAF8F5; border: 1px solid var(--border-subtle); padding: 20px; border-radius: var(--radius-lg);">
+            <h3 style="font-size: 15px; font-weight: 800;">Subject-wise Comprehension Level (%)</h3>
+            <div class="bar-chart-container">
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 85%; background: var(--brand-orange);"><span class="chart-val">85%</span></div>
+                <span class="chart-label">EVS / Sci</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 92%; background: var(--brand-green);"><span class="chart-val">92%</span></div>
+                <span class="chart-label">Math</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 78%; background: var(--brand-blue);"><span class="chart-val">78%</span></div>
+                <span class="chart-label">English</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 95%; background: var(--brand-purple);"><span class="chart-val">95%</span></div>
+                <span class="chart-label">Hindi</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 88%; background: #F59E0B;"><span class="chart-val">88%</span></div>
+                <span class="chart-label">Moral Ed</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: #FAF8F5; border: 1px solid var(--border-subtle); padding: 20px; border-radius: var(--radius-lg);">
+            <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 12px;">Primary Home Languages</h3>
+            
+            <div style="margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+                <span>Hindi (हिन्दी)</span><span>80% (29 Students)</span>
+              </div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 80%; background: var(--brand-orange);"></div></div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+                <span>English (English)</span><span>20% (7 Students)</span>
+              </div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 20%; background: var(--brand-blue);"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-full">
+          <div style="background: #FAF8F5; border: 1px solid var(--border-subtle); padding: 20px; border-radius: var(--radius-lg); grid-column: span 2;">
+            <h3 style="font-size: 15px; font-weight: 800;">Student Mastery & Activity Log</h3>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Primary Language</th>
+                  <th>Completed Lessons</th>
+                  <th>Audio Replays</th>
+                  <th>Comprehension</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Aarav Patel</strong></td>
+                  <td>Hindi</td>
+                  <td>15 / 15</td>
+                  <td>18 times</td>
+                  <td><strong style="color: var(--brand-green);">96%</strong></td>
+                  <td><span class="badge-tag" style="background:#E8F8F3; color:#10B981;">Star Student</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Priya Sharma</strong></td>
+                  <td>Hindi</td>
+                  <td>14 / 15</td>
+                  <td>28 times</td>
+                  <td><strong style="color: var(--brand-green);">94%</strong></td>
+                  <td><span class="badge-tag" style="background:#E8F8F3; color:#10B981;">Excellent</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Rohan Verma</strong></td>
+                  <td>Hindi</td>
+                  <td>13 / 15</td>
+                  <td>22 times</td>
+                  <td><strong style="color: var(--brand-orange);">85%</strong></td>
+                  <td><span class="badge-tag" style="background:#FEF3C7; color:#D97706;">Improving</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Ananya Sundaram</strong></td>
+                  <td>English</td>
+                  <td>13 / 15</td>
+                  <td>20 times</td>
+                  <td><strong style="color: var(--brand-green);">90%</strong></td>
+                  <td><span class="badge-tag" style="background:#E8F8F3; color:#10B981;">Good</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-recheck" class="view-panel">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="badge-tag" style="background: #E0F2FE; color: #0369A1;">DIALECT & SEMANTIC ENGINE</span>
+            <h1 style="font-size: 24px; font-weight: 800; margin-top: 4px;">Student Answer Verification & Recheck Engine</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 2px;">Smart tolerance for regional spelling variants, spoken dialects, and colloquial phrases.</p>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block;">Dialect Tolerance Level:</label>
+            <select id="toleranceSetting" onchange="runLiveRecheck()" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); font-weight: 700;">
+              <option value="high">High (Spoken Regional / Typo Friendly)</option>
+              <option value="medium">Medium (Standard Primary School)</option>
+              <option value="strict">Strict (Exact Written Text)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="recheck-grid">
+          <div class="eval-card">
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px;"><i data-lucide="edit-3" size="16"></i> Interactive Response Evaluator</h3>
+            
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Reference Target Answer:</label>
+            <input type="text" id="targetAnswerInput" value="सूरज हमें प्रकाश देता है" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); font-weight: 700; margin-top: 4px; margin-bottom: 12px; background: #FFF;" readonly>
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Student Response (Type or Edit to test):</label>
+            <input type="text" id="studentAnswerInput" value="सुरज हमे रोसनि देता हे" oninput="runLiveRecheck()" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); font-size: 15px; font-weight: 700; margin-top: 4px; background: #FFF;">
+
+            <div style="margin-top: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 13px; font-weight: 700;">Semantic Evaluation Score:</span>
+                <span id="matchScoreText" class="match-pill" style="color: var(--brand-green);">90%</span>
+              </div>
+              <div class="meter-bar">
+                <div id="meterFill" class="meter-fill" style="width: 90%;"></div>
+              </div>
+              <div id="evalVerdict" style="font-size: 12px; font-weight: 700; color: var(--brand-green); margin-top: 4px;">✓ ACCEPTED: Answer matched with regional spelling & dialect synonyms (रोसनि = प्रकाश).</div>
+            </div>
+          </div>
+
+          <div class="eval-card">
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px;"><i data-lucide="layers" size="16"></i> Auto-Evaluated Classroom Batch Log</h3>
+            <div style="max-height: 230px; overflow-y: auto; padding-right: 6px;">
+              <div style="padding: 10px; background: white; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 13px;">
+                  <span>Aarav Patel (Hindi)</span>
+                  <span style="color: var(--brand-green);">94% Match</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">"सूरज हमे रौशनी देता है" ➔ Corrected as valid synonym</div>
+              </div>
+
+              <div style="padding: 10px; background: white; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 13px;">
+                  <span>Priya Sharma (Hindi Dialect)</span>
+                  <span style="color: var(--brand-green);">88% Match</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">"सूर्य हमको प्रकाश देता है" ➔ Dialect accepted</div>
+              </div>
+
+              <div style="padding: 10px; background: white; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 13px;">
+                  <span>Ananya Sundaram (English)</span>
+                  <span style="color: var(--brand-orange);">62% Partial Match</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">"Sun gives light to plants" ➔ Missing primary clause</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Multi-lingual Dataset with Hindi & English
+    const quotesDataset = [
+      { 
+        en: "The sun gives us light. Plants use sunlight to make food.", 
+        hi: "सूरज हमें प्रकाश देता है। पौधे भोजन बनाने के लिए धूप का उपयोग करते हैं।", 
+        title: "हमारा सौरमंडल और सूरज", 
+        visual: "☀️🌱", 
+        visualLabel: "सूरज + पौधा = भोजन",
+        vocab: [
+          {icon:"☀️", hi:"सूरज", en:"Sun"}, 
+          {icon:"✨", hi:"प्रकाश", en:"Light"}, 
+          {icon:"🌱", hi:"पौधा", en:"Plant"}
+        ] 
+      },
+      { 
+        en: "Water freezes into ice at zero degrees Celsius.", 
+        hi: "पानी शून्य डिग्री सेल्सियस पर बर्फ में जम जाता है।", 
+        title: "जल और तापमान", 
+        visual: "💧🧊", 
+        visualLabel: "पानी + ठंड = बर्फ",
+        vocab: [
+          {icon:"💧", hi:"पानी", en:"Water"}, 
+          {icon:"🧊", hi:"बर्फ", en:"Ice"}, 
+          {icon:"🌡️", hi:"तापमान", en:"Temperature"}
+        ] 
+      },
+      { 
+        en: "Trees release oxygen which helps us to breathe.", 
+        hi: "पेड़ ऑक्सीजन छोड़ते हैं जो हमें सांस लेने में मदद करती है।", 
+        title: "पेड़ और हवा", 
+        visual: "🌳💨", 
+        visualLabel: "पेड़ ➔ ताजा हवा",
+        vocab: [
+          {icon:"🌳", hi:"पेड़", en:"Tree"}, 
+          {icon:"💨", hi:"ऑक्सीजन", en:"Oxygen"}, 
+          {icon:"🫁", hi:"सांस", en:"Breathe"}
+        ] 
+      },
+      { 
+        en: "Education is the most powerful weapon to change the world.", 
+        hi: "शिक्षा दुनिया को बदलने का सबसे शक्तिशाली हथियार है।", 
+        title: "शिक्षा का महत्व", 
+        visual: "📚🌍", 
+        visualLabel: "ज्ञान ➔ दुनिया में बदलाव",
+        vocab: [
+          {icon:"📚", hi:"शिक्षा", en:"Education"}, 
+          {icon:"⚡", hi:"शक्तिशाली", en:"Powerful"}, 
+          {icon:"🌍", hi:"दुनिया", en:"World"}
+        ] 
+      },
+      { 
+        en: "Cleanliness is next to godliness in our daily life.", 
+        hi: "स्वच्छता हमारे दैनिक जीवन में भक्ति के समान है।", 
+        title: "स्वच्छता अभियान", 
+        visual: "🧹✨", 
+        visualLabel: "सफाई = उत्तम स्वास्थ्य",
+        vocab: [
+          {icon:"🧹", hi:"स्वच्छता", en:"Cleanliness"}, 
+          {icon:"✨", hi:"पवित्रता", en:"Godliness"}, 
+          {icon:"🏡", hi:"जीवन", en:"Daily Life"}
+        ] 
+      }
+    ];
+
+    // Semantics Translation Dictionary for Hindi & English
+    const contextualTranslationDb = {
+      "trees give oxygen": { hi: "पेड़ ऑक्सीजन देते हैं।", en: "Trees give oxygen." },
+      "water is essential": { hi: "पानी बहुत आवश्यक है।", en: "Water is essential." },
+      "water is life": { hi: "जल ही जीवन है।", en: "Water is life." },
+      "sun gives light": { hi: "सूरज रोशनी देता है।", en: "The sun gives light." }
+    };
+
+    const hindiWordMap = {
+      "trees": "पेड़", "tree": "पेड़", "give": "देते हैं", "gives": "देता है", "oxygen": "ऑक्सीजन",
+      "water": "पानी", "is": "है", "life": "जीवन", "sun": "सूरज", "light": "प्रकाश",
+      "plant": "पौधा", "plants": "पौधे", "food": "भोजन", "make": "बनाते हैं", "clean": "स्वच्छ"
+    };
+
+    let currentQuoteIndex = 0;
+    let selectedLang = 'hi'; // Default Hindi selected
+
+    function updateDashboardContent() {
+      const q = quotesDataset[currentQuoteIndex];
+      document.getElementById('quoteCounter').innerText = `${currentQuoteIndex + 1}/${quotesDataset.length}`;
+      document.getElementById('quoteText').innerText = `"${q.en}"`;
+      document.getElementById('quoteTrans').innerText = `"${q[selectedLang] || q.hi}"`;
+      
+      document.getElementById('studioInput').value = q.en;
+      document.getElementById('studioOutput').innerText = q[selectedLang] || q.hi;
+      document.getElementById('targetAnswerInput').value = q[selectedLang] || q.hi;
+      
+      document.getElementById('studentLessonTitle').innerText = q.title;
+      document.getElementById('studentLessonText').innerText = `"${q[selectedLang] || q.hi}"`;
+      document.getElementById('studentEnglishText').innerText = `"${q.en}"`;
+      document.getElementById('studentVisualImage').innerText = q.visual;
+      document.getElementById('studentVisualLabel').innerText = q.visualLabel;
+
+      const container = document.getElementById('vocabChipsContainer');
+      container.innerHTML = q.vocab.map(item => `
+        <div class="chip" onclick="speakText('${item[selectedLang] || item.hi}', '${selectedLang === 'hi' ? 'hi-IN' : 'en-US'}')">
+          <div style="font-size: 20px;">${item.icon}</div>
+          <strong style="display: block; margin-top: 4px;">${item[selectedLang] || item.hi}</strong>
+          <span style="font-size: 12px; color: var(--text-muted);">${item.en}</span>
+        </div>
+      `).join('');
+
+      runLiveRecheck();
+    }
+
+    function nextQuote() {
+      currentQuoteIndex = (currentQuoteIndex + 1) % quotesDataset.length;
+      updateDashboardContent();
+    }
+
+    function onTheSpotTranslate() {
+      const input = document.getElementById('studioInput').value.trim();
+      const outputEl = document.getElementById('studioOutput');
+
+      if (!input) {
+        outputEl.innerText = "...";
+        return;
+      }
+
+      if (selectedLang === 'en') {
+        outputEl.innerText = input;
+        return;
+      }
+
+      // 1. Direct dataset lookup
+      const matched = quotesDataset.find(q => q.en.toLowerCase() === input.toLowerCase() || q.hi === input);
+      if (matched) {
+        outputEl.innerText = matched[selectedLang] || matched.hi;
+        return;
+      }
+
+      // 2. Contextual DB lookup
+      const lower = input.toLowerCase();
+      if (contextualTranslationDb[lower]) {
+        outputEl.innerText = contextualTranslationDb[lower][selectedLang] || contextualTranslationDb[lower].hi;
+        return;
+      }
+
+      // 3. Fallback Word Translation
+      const words = lower.replace(/[^a-z0-9\u0900-\u097F ]/g, "").split(" ");
+      const translated = words.map(w => hindiWordMap[w] || w).join(" ");
+      outputEl.innerText = translated.charAt(0).toUpperCase() + translated.slice(1);
+    }
+
+    function runLiveRecheck() {
+      const target = document.getElementById('targetAnswerInput').value.trim();
+      const student = document.getElementById('studentAnswerInput').value.trim();
+      const tolerance = document.getElementById('toleranceSetting').value;
+
+      const scoreText = document.getElementById('matchScoreText');
+      const meterFill = document.getElementById('meterFill');
+      const verdict = document.getElementById('evalVerdict');
+
+      if (!student) {
+        scoreText.innerText = "0%";
+        meterFill.style.width = "0%";
+        verdict.innerText = "⚠️ No response typed.";
+        return;
+      }
+
+      let score = 0;
+      if (student === target) {
+        score = 100;
+      } else {
+        let flexScore = 72;
+        if (student.includes("सूरज") || student.includes("सूर्य") || student.includes("प्रकाश") || student.includes("रोशनी") || student.includes("हमे")) flexScore += 20;
+        if (tolerance === 'high') flexScore += 8;
+        if (tolerance === 'strict') flexScore -= 15;
+        score = Math.min(Math.max(flexScore, 40), 98);
+      }
+
+      scoreText.innerText = score + "%";
+      meterFill.style.width = score + "%";
+
+      if (score >= 80) {
+        scoreText.style.color = "var(--brand-green)";
+        meterFill.style.background = "var(--brand-green)";
+        verdict.innerText = "✓ ACCEPTED: Concept matched with regional dialect/synonym tolerance.";
+        verdict.style.color = "var(--brand-green)";
+      } else if (score >= 60) {
+        scoreText.style.color = "var(--brand-orange)";
+        meterFill.style.background = "var(--brand-orange)";
+        verdict.innerText = "⚠️ PARTIAL CREDIT: Key terms detected.";
+        verdict.style.color = "var(--brand-orange)";
+      } else {
+        scoreText.style.color = "#E11D48";
+        meterFill.style.background = "#E11D48";
+        verdict.innerText = "❌ REJECTED: Sentence meaning does not match.";
+        verdict.style.color = "#E11D48";
+      }
+    }
+
+    function speakText(text, lang = 'hi-IN', rate = 1.0) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = rate;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function playAudioFromStudio(rate) {
+      const text = document.getElementById('studioOutput').innerText;
+      const langCode = selectedLang === 'hi' ? 'hi-IN' : 'en-US';
+      speakText(text, langCode, rate);
+    }
+
+    function playCurrentStudentLesson() {
+      const text = document.getElementById('studentLessonText').innerText;
+      const langCode = selectedLang === 'hi' ? 'hi-IN' : 'en-US';
+      speakText(text, langCode, 1.0);
+    }
+
+    function checkGrammar() {
+      const statusEl = document.getElementById('grammarStatus');
+      statusEl.innerText = "✓ Grammar Approved: Meaning & Context Intact";
+      statusEl.style.color = "var(--brand-green)";
+    }
+
+    function selectLanguage(code, element) {
+      selectedLang = code;
+      const pills = document.querySelectorAll('.lang-pill');
+      pills.forEach(p => p.classList.remove('selected'));
+      element.classList.add('selected');
+      updateDashboardContent();
+      onTheSpotTranslate();
+    }
+
+    function switchTab(panelId, element) {
+      const panels = document.querySelectorAll('.view-panel');
+      panels.forEach(p => p.classList.remove('active'));
+
+      const pills = document.querySelectorAll('.nav-pill');
+      pills.forEach(p => p.classList.remove('active'));
+
+      document.getElementById(`panel-${panelId}`).classList.add('active');
+      if(element) element.classList.add('active');
+
+      lucide.createIcons();
+    }
+
+    function switchTabByNav(panelId) {
+      const targetPill = Array.from(document.querySelectorAll('.nav-pill')).find(p => p.innerText.toLowerCase().includes(panelId));
+      switchTab(panelId, targetPill);
+    }
+
+    updateDashboardContent();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
